@@ -1,0 +1,15 @@
+---
+title: "Trevor Sullivan"
+image: "files/profile-pic.jpg"
+about:
+  template: jolla
+  links:
+    - icon: envelope
+      href: mailto:trsullivan@ucsd.edu
+    - icon: linkedin
+      href: https://www.linkedin.com/in/trevdensull
+    - icon: github
+      href: https://github.com/rsm-trsullivan
+---
+
+MSBA student at UC San Diego with experience in analytics, hospitality, and client-facing projects. I’m interested in using data to solve practical business problems, with a focus on financial analysis, operations, and strategy.

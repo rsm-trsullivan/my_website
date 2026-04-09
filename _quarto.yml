@@ -1,0 +1,26 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Trevor's Website"
+  navbar:
+    right:
+      - href: index.qmd
+        icon: person-circle
+        text: About
+      - href: resume.qmd
+        icon: file-earmark-check
+        text: Resume
+      - href: projects.qmd
+        icon: collection
+        text: Projects
+  page-footer:
+      background: light
+      left: Copyright 2026, Trevor Sullivan
+format:
+  html:
+    theme: styles.scss
+    page-layout: full
+    mainfont: Nunito
+    toc: true
