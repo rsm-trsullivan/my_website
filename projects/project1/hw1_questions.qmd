@@ -335,7 +335,6 @@ $$
 $$
 
 -   This equivalence matters because it shows that the hypothesis test for comparing two means can be viewed as a regression coefficient test. In the simple two-group case, the regression and two-sample approach give the same estimated treatment effect. More importantly, the regression framework makes it easy to extend the analysis by adding controls, interactions, or additional treatment arms while preserving the same basic interpretation of the treatment coefficient.
-
 :::
 
 ```{python}
@@ -380,7 +379,6 @@ $$
 -   The estimated standard error for $\hat{\beta}_1$ is approximately $0.0493$, which gives a test statistic of $t = 0.406$ and a p-value of $0.685$. Because this p-value is much larger than 0.05, we fail to reject the null hypothesis that $\beta_1 = 0$. In other words, the regression provides no statistically significant evidence that the two CTAs differ in their sign-up rates.
 
 -   This matches the earlier two-sample test result: the estimated treatment effect is the same, and the inference is essentially the same as well. That equivalence illustrates the key point of this section: in the simple two-group A/B testing setting, the difference in means test can be written as a linear regression, with the treatment effect captured directly by the coefficient on the group indicator.
-
 :::
 
 ## The Problem with Peeking
@@ -388,9 +386,9 @@ $$
 ::: callout-note
 -   Your boss is impatient. Rather than waiting until all 1,000 visitors have been assigned to each group, she wants to run the hypothesis test after every 100 visitors per group — peeking at the results after 100, 200, 300, ..., up to 1,000 visitors per group (10 tests in total). If any of those tests comes back significant at the $\alpha = 0.05$ level, she wants to declare a winner and stop the experiment early.
 
--   To demonstrate the problem with peeking, we simulate 10,000 A/B tests in a setting where the null hypothesis is true, with $\pi_A = \pi_B = 0.20$. In each     simulated experiment, we generate 1,000 observations per group and compute the hypothesis test after every 100 observations per group, giving 10 sequential peeks in total. If any one of those interim tests is significant at the $\alpha = 0.05$ level, we record the experiment as a false positive. The fraction of experiments with at least one significant result is the empirical Type I error rate under peeking.
+-   To demonstrate the problem with peeking, we simulate 10,000 A/B tests in a setting where the null hypothesis is true, with $\pi_A = \pi_B = 0.20$. In each simulated experiment, we generate 1,000 observations per group and compute the hypothesis test after every 100 observations per group, giving 10 sequential peeks in total. If any one of those interim tests is significant at the $\alpha = 0.05$ level, we record the experiment as a false positive. The fraction of experiments with at least one significant result is the empirical Type I error rate under peeking.
 
--   Because each interim look creates another chance to reject the null hypothesis by random fluctuation alone, this false positive rate is much larger than the nominal 5\% level of a single test. Thus, repeatedly checking the data and stopping early when significance appears invalidates the usual interpretation of the p-value unless a sequential testing correction is used.
+-   Because each interim look creates another chance to reject the null hypothesis by random fluctuation alone, this false positive rate is much larger than the nominal 5% level of a single test. Thus, repeatedly checking the data and stopping early when significance appears invalidates the usual interpretation of the p-value unless a sequential testing correction is used.
 
 -   The following code demonstrates the simulation:
 :::
@@ -445,9 +443,9 @@ print("Nominal false positive rate for a single test:", alpha)
 ```
 
 ::: callout-note
--   The simulation shows that when the null hypothesis is true, repeated peeking greatly inflates the false positive rate. Although a single hypothesis test at the $\alpha = 0.05$ level is designed to have a 5\% chance of incorrectly rejecting the null, the empirical false positive rate rises to 19.9\% when the data are checked repeatedly after every 100 observations per group and the experiment is stopped as soon as significance appears.
+-   The simulation shows that when the null hypothesis is true, repeated peeking greatly inflates the false positive rate. Although a single hypothesis test at the $\alpha = 0.05$ level is designed to have a 5% chance of incorrectly rejecting the null, the empirical false positive rate rises to 19.9% when the data are checked repeatedly after every 100 observations per group and the experiment is stopped as soon as significance appears.
 
--   This happens because each interim look creates another opportunity for random noise to produce a statistically significant result. Even if there is truly no difference between CTA A and CTA B, repeatedly testing the accumulating data makes it much more likely that at least one p-value will fall below 0.05 by chance alone. As a result, the nominal 5\% Type I error rate no longer describes the actual probability of a false positive under this peeking strategy.
+-   This happens because each interim look creates another opportunity for random noise to produce a statistically significant result. Even if there is truly no difference between CTA A and CTA B, repeatedly testing the accumulating data makes it much more likely that at least one p-value will fall below 0.05 by chance alone. As a result, the nominal 5% Type I error rate no longer describes the actual probability of a false positive under this peeking strategy.
 
 -   In practical terms, this means that classical p-values and significance thresholds are only valid when the sample size and testing plan are fixed in advance. If an experimenter repeatedly checks the results and stops early once significance appears, the reported result is much more likely to be a false discovery unless an appropriate sequential testing correction is used.
 :::

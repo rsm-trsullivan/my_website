@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Trevor Sullivan">
-<meta name="dcterms.date" content="2026-04-15">
+<meta name="dcterms.date" content="2026-04-21">
 
 <title>A/B Testing a Call to Action – Trevor’s Website</title>
 <style>
@@ -221,7 +221,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 15, 2026</p>
+      <p class="date">April 21, 2026</p>
     </div>
   </div>
   
@@ -299,7 +299,7 @@ Note
 </ul>
 </div>
 </div>
-<div id="7869cdff" class="cell" data-execution_count="1">
+<div id="fe5df396" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -337,14 +337,14 @@ Note
 </ul>
 </div>
 </div>
-<div id="2a4cefc8" class="cell" data-execution_count="2">
+<div id="acee14b8" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Element-wise differences</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>differences <span class="op">=</span> A_draws <span class="op">-</span> B_draws</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cumulative average (running mean)</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>cumulative_avg <span class="op">=</span> np.cumsum(differences) <span class="op">/</span> np.arange(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="ca22f45a" class="cell" data-execution_count="3">
+<div id="a5eebebd" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -398,7 +398,7 @@ SE(\hat\theta) = \sqrt{\frac{\hat\pi_A(1 - \hat\pi_A)}{n_A} + \frac{\hat\pi_B(1 
 <p>where <span class="math inline">\(\hat\pi_A\)</span> and <span class="math inline">\(\hat\pi_B\)</span> are the sample proportions and <span class="math inline">\(n_A\)</span> and <span class="math inline">\(n_B\)</span> are the sample sizes.</p>
 </div>
 </div>
-<div id="51771526" class="cell" data-execution_count="4">
+<div id="1a407d90" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of simulations</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n_boot <span class="op">=</span> <span class="dv">1000</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -456,7 +456,7 @@ Note
 </ul>
 </div>
 </div>
-<div id="ce2020ca" class="cell" data-execution_count="5">
+<div id="dd09aa89" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute theta_hat</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>theta_hat <span class="op">=</span> pi_A_hat <span class="op">-</span> pi_B_hat</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -515,7 +515,7 @@ Note
 </ul>
 </div>
 </div>
-<div id="394e1441" class="cell" data-execution_count="6">
+<div id="a06f25bd" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample sizes</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>sample_sizes <span class="op">=</span> [<span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">500</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -536,7 +536,7 @@ Note
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    results[n] <span class="op">=</span> theta_hat_values</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="a8bd1cbb" class="cell" data-execution_count="7">
+<div id="105d2d62" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -586,7 +586,7 @@ z = \frac{\hat\theta - 0}{SE(\hat\theta)}
 </ul>
 </div>
 </div>
-<div id="2283e3fb" class="cell" data-execution_count="8">
+<div id="3ab0647e" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># example simulated data</span></span>
@@ -670,7 +670,7 @@ Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i.
 </ul>
 </div>
 </div>
-<div id="5ce37282" class="cell" data-execution_count="9">
+<div id="701390bd" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -702,8 +702,8 @@ Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i.
 Dep. Variable:                      Y   R-squared:                       0.001
 Model:                            OLS   Adj. R-squared:                 -0.004
 Method:                 Least Squares   F-statistic:                    0.1646
-Date:                Wed, 15 Apr 2026   Prob (F-statistic):              0.685
-Time:                        19:21:26   Log-Likelihood:                -72.011
+Date:                Tue, 21 Apr 2026   Prob (F-statistic):              0.685
+Time:                        16:28:07   Log-Likelihood:                -72.011
 No. Observations:                 200   AIC:                             148.0
 Df Residuals:                     198   BIC:                             154.6
 Df Model:                           1                                         
@@ -772,7 +772,7 @@ Note
 </ul>
 </div>
 </div>
-<div id="e31b8c1c" class="cell" data-execution_count="10">
+<div id="8427c6de" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># settings</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>pi_A <span class="op">=</span> <span class="fl">0.20</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>pi_B <span class="op">=</span> <span class="fl">0.20</span></span>

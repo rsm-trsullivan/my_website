@@ -1,0 +1,456 @@
+---
+title: "Replication of Angrist and Lavy (1999)"
+subtitle: "USING MAIMONIDES’ RULE TO ESTIMATE THE EFFECT OF CLASS SIZE ON SCHOLASTIC ACHIEVEMENT*"
+author: "Trevor Sullivan"
+date: today
+---
+
+
+## Introduction
+
+In Israel, schools followed Maimonides’ rule, which capped class size at 40 students. That creates sharp jumps in class size when enrollment crosses thresholds like 40 or 80. For example, 40 students can be taught in one class, but 41 students must be split into two smaller classes. Angrist and Lavy use this rule as an instrumental variable to study whether those changes in class sizes affect the achievement of students. The goal of this study is to estimate the causal effect of class size on students' test scores, and not just identify a simple correlation.
+
+The motivation for the design of this study is that earlier research on class size and difficult to interpret, because class size is often confounded with other factors like student disadvantage, remedial placement, and school quality. The authors want to move around that problem by exploiting the nonlinear pattern created by Maimonides' rule.
+
+## Main Analysis
+
+```{python}
+#| echo: true
+#| output: true
+import pandas as pd
+import numpy as np
+from pathlib import Path
+from linearmodels.iv import IV2SLS
+import statsmodels.api as sm
+```
+
+```{python}
+#| echo: false
+data_dir = Path("data")
+```
+### Load the fifth-grade sample
+
+```{python}
+#| echo: true
+#| output: true
+# Load in dataset
+df5 = pd.read_stata(data_dir / "final5.dta")
+
+# Quick inspection
+print(f"Shape: {df5.shape}")
+print(f"Column names: {df5.columns.tolist()}")
+df5.head()
+```
+
+I begin with the grade-specific Stata file rather than combining samples across grades. This matches the structure of the original study, which reports results separately for fourth and fifth graders. For the main replication, I start with `final5.dta`, since the paper’s strongest and most prominent findings are for fifth-grade outcomes, especially reading achievement.
+
+Before estimating any models, I inspect the dataset to identify the variables corresponding to observed class size, enrollment, test scores, and the measure of student disadvantage. This step is important because even when working from the authors’ original files, variable names may be abbreviated or coded differently than the terminology used in the paper. Confirming these mappings up front makes the later replication steps easier to interpret and reduces the risk of specification errors.
+
+### Identify the core variables
+
+```{python}
+#| echo: true
+#| output: true
+# Keep the core variables for replication
+g5 = df5[["classize", "cohsize", "avgverb", "avgmath", "tipuach", "schlcode"]].copy()
+
+# Drop missing values in the main analysis variables
+g5 = g5.dropna(subset=["classize", "cohsize", "avgverb", "avgmath", "tipuach"]).copy()
+
+print(f"Shape: {g5.shape}")
+g5.describe().T
+```
+
+### Construct the Maimonides-rule instrument
+
+The key source of identification in the paper is the class-size rule attributed to Maimonides, which caps classes at 40 students. This rule implies a nonlinear relationship between cohort enrollment and predicted class size. If a grade has $e_s$ students enrolled, then the predicted class size is
+
+$$
+f_s = \frac{e_s}{\left\lfloor \frac{e_s - 1}{40} \right\rfloor + 1}.
+$$
+
+This formula captures the fact that a cohort of up to 40 students can remain in one class, while a cohort of 41 students must be split into two classes. More generally, the denominator gives the number of classes implied by the 40-student cap. Following the paper, I use this rule-based predicted class size as an instrument for actual class size.
+
+```{python}
+#| echo: true
+#| output: true
+# Construct Maimonides' rule predicted class size
+# f_sc = enrollment / ( floor((enrollment - 1)/40) + 1 )
+
+g5["pred_class_size"] = g5["cohsize"] / (np.floor((g5["cohsize"] - 1) / 40) + 1)
+
+g5[["cohsize", "pred_class_size", "classize"]].head(10)
+```
+
+### First-stage relationship
+
+The first empirical step is to verify the relevance of the instrument. In a fuzzy regression discontinuity framework, crossing the enrollment thresholds does not perfectly determine actual class size, but it should still shift class size strongly and systematically. This is the first-stage relationship.
+
+Formally, the first stage can be written as
+
+$$
+\text{classize}_{sc} = \pi_0 + \pi_1 f_s + \pi_2 \text{tipuach}_s + \pi_3 \text{cohsize}_s + u_{sc},
+$$
+
+where $f_s$ is predicted class size from Maimonides’ rule. A strong negative or positive association between the instrument and observed class size is essential, because the IV estimates rely on this rule-based variation to identify the causal effect of class size.
+
+```{python}
+# Quick first-stage check with OLS
+X_fs = g5[["pred_class_size", "tipuach", "cohsize"]].copy()
+X_fs = sm.add_constant(X_fs)
+
+first_stage = sm.OLS(g5["classize"], X_fs).fit(cov_type="HC1")
+print(first_stage.summary())
+```
+
+::: callout-note
+### Interpretation of the first-stage results
+
+The first-stage regression confirms that the Maimonides-rule instrument is highly relevant for explaining observed class size. The coefficient on `pred_class_size` is **0.6565** with a very small standard error, indicating a strong positive relationship between rule-predicted class size and actual class size. In other words, when the institutional rule predicts larger classes, schools do in fact tend to have larger observed classes.
+
+Formally, the estimated first stage is
+
+$$
+\text{classize}_{sc} = \pi_0 + \pi_1 \text{pred\_class\_size}_{s} + \pi_2 \text{tipuach}_{s} + \pi_3 \text{cohsize}_{s} + u_{sc},
+$$
+
+with $\hat{\pi}_1 = 0.6565$. This means that a one-student increase in predicted class size is associated with about a **0.66 student increase** in actual class size, conditional on disadvantage and cohort size.
+
+This is exactly what the replication needs at this stage: a strong first stage. Since the IV strategy relies on variation in actual class size generated by the rule of 40, the fact that the instrument enters so strongly supports the credibility of the 2SLS design.
+:::
+
+### Reduced-form relationship
+
+After verifying that the instrument predicts actual class size, I estimate the reduced-form relationship between the rule-based instrument and student achievement. This asks whether the variation in class size induced by Maimonides’ rule is associated with systematic changes in test scores.
+
+The reduced form is useful because it captures the total effect of the instrument on outcomes before dividing by the first-stage relationship. In notation, the reduced-form regression for reading is
+
+$$
+\text{avgverb}_{sc} = \rho_0 + \rho_1 f_s + \rho_2 \text{tipuach}_s + \rho_3 \text{cohsize}_s + \varepsilon_{sc}.
+$$
+
+If smaller classes improve achievement, then the discontinuities induced by the rule should generate corresponding shifts in test performance.
+
+```{python}
+# Reduced form: reading score on predicted class size + controls
+X_rf = g5[["pred_class_size", "tipuach", "cohsize"]].copy()
+X_rf = sm.add_constant(X_rf)
+
+reduced_form = sm.OLS(g5["avgverb"], X_rf).fit(cov_type="HC1")
+print(reduced_form.summary())
+```
+
+::: callout-note
+### Interpretation of the reduced-form results
+
+The reduced-form regression shows that higher predicted class size is associated with lower fifth-grade reading performance. The coefficient on `pred_class_size` is **-0.1524**, implying that when the rule predicts larger classes, average verbal scores fall.
+
+This relationship can be written as
+
+$$
+\text{avgverb}_{sc} = \rho_0 + \rho_1 \text{pred\_class\_size}_{s} + \rho_2 \text{tipuach}_{s} + \rho_3 \text{cohsize}_{s} + \varepsilon_{sc},
+$$
+
+with $\hat{\rho}_1 = -0.1524$. The negative sign is consistent with the paper’s main intuition: the enrollment cutoffs created by Maimonides’ rule shift class size in a way that also shifts student achievement.
+
+Essentially, the reduced form is useful because it shows that the instrument matters not only for treatment assignment, but also for outcomes. This is the key connection between the first stage and the IV estimate. The negative reduced-form coefficient already suggests that smaller classes improve reading scores in the fifth-grade sample.
+:::
+
+### Estimate the main 2SLS specification
+
+Next, I will estimate the main instrumental variables model, using predicted class size from Maimonides’ rule as an instrument for observed class size. This is the central replication step because it corresponds directly to the paper’s main causal claim.
+
+The second-stage equation can be written as
+
+$$
+\text{avgverb}_{sc} = \beta_0 + \beta_1 \text{classize}_{sc} + \beta_2 \text{tipuach}_s + \beta_3 \text{cohsize}_s + \eta_{sc},
+$$
+
+where `classize` is treated as endogenous and instrumented with $f_s$. The coefficient of interest is $\beta_1$. A negative estimate implies that reducing class size increases average verbal achievement, which is the core finding reported in the paper for fifth graders.
+
+```{python}
+# Main 2SLS specification: fifth-grade reading
+iv_reading = IV2SLS.from_formula(
+    "avgverb ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]",
+    data=g5
+).fit(cov_type="robust")
+
+print(iv_reading.summary)
+```
+
+::: callout-note
+### Interpretation of the main 2SLS result for fifth-grade reading
+
+The main IV estimate implies a statistically significant negative effect of class size on fifth-grade reading achievement. The coefficient on `classize` is **-0.2321**, which means that increasing class size by one student lowers the average verbal score by about **0.23 points**, holding disadvantage and cohort size constant.
+
+The second-stage equation is
+
+$$
+\text{avgverb}_{sc} = \beta_0 + \beta_1 \text{classize}_{sc} + \beta_2 \text{tipuach}_{s} + \beta_3 \text{cohsize}_{s} + \eta_{sc},
+$$
+
+where `classize` is instrumented using `pred_class_size`. The estimate $\hat{\beta}_1 = -0.2321$ is close to the values reported in Angrist and Lavy for fifth-grade reading, where their preferred specifications are generally in the range of roughly $-0.16$ to $-0.28$.
+
+This is therefore a successful replication of one of the paper’s central findings. The sign, magnitude, and statistical significance all line up with the published result: **smaller classes lead to higher reading achievement for fifth graders**.
+:::
+
+### Add a quadratic control for enrollment
+
+One concern in this design is that cohort enrollment may affect test scores through channels other than class size. To address this, the paper considers specifications that include increasingly flexible controls for enrollment. I begin with a quadratic specification by adding $\text{cohsize}^2 / 100$ to the model.
+
+The motivation is that the identifying assumption is not that enrollment is random, but rather that any non-class-size effects of enrollment are smooth. The discontinuities generated by the rule then provide the source of exogenous variation. The corresponding specification becomes
+
+$$
+\text{avgverb}_{sc} =
+\beta_0 + \beta_1 \text{classize}_{sc}
++ \beta_2 \text{tipuach}_s
++ \beta_3 \text{cohsize}_s
++ \beta_4 \frac{\text{cohsize}_s^2}{100}
++ \eta_{sc}.
+$$
+
+This helps check whether the estimated class-size effect is robust to a more flexible control for enrollment.
+
+```{python}
+# 2SLS with quadratic enrollment control
+g5["cohsize_sq_100"] = (g5["cohsize"] ** 2) / 100
+
+iv_reading_quad = IV2SLS.from_formula(
+    "avgverb ~ 1 + tipuach + cohsize + cohsize_sq_100 + [classize ~ pred_class_size]",
+    data=g5
+).fit(cov_type="robust")
+
+print(iv_reading_quad.summary)
+```
+
+::: callout-note
+### Interpretation of the 2SLS result with quadratic enrollment controls
+
+Adding a quadratic term in cohort size leaves the estimated class-size effect essentially unchanged. The coefficient on `classize` is **-0.2320**, compared with **-0.2321** in the linear specification. The coefficient on the quadratic term itself is extremely small and statistically insignificant.
+
+This specification is helpful because one concern in regression discontinuity or IV designs based on enrollment is that cohort size may affect outcomes through nonlinear channels unrelated to class size. By estimating
+
+$$
+\text{avgverb}_{sc}
+= \beta_0 + \beta_1 \text{classize}_{sc}
++ \beta_2 \text{tipuach}_{s}
++ \beta_3 \text{cohsize}_{s}
++ \beta_4 \frac{\text{cohsize}_{s}^{2}}{100}
++ \eta_{sc},
+$$
+
+I allow for a more flexible smooth relationship between enrollment and achievement.
+
+The fact that the estimated effect of class size is virtually identical across the linear and quadratic specifications suggests that the result is not being driven by a misspecified control for cohort size. This strengthens the interpretation that the discontinuous variation induced by Maimonides’ rule is identifying a genuine causal effect.
+:::
+
+### Compare reading and math outcomes
+
+After estimating the model for verbal achievement, I repeat the same 2SLS procedure using average math scores as the dependent variable. This comparison is useful because the paper reports stronger and more consistent evidence for some outcomes than for others. Replicating both outcomes helps determine whether the data reproduce the same qualitative pattern.
+
+Using the same instrument and control set also makes the comparison clean: any difference in results between reading and math reflects differences in how class size affects those outcomes, rather than differences in specification.
+
+```{python}
+# 2SLS for math, if you want to compare to the paper
+iv_math = IV2SLS.from_formula(
+    "avgmath ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]",
+    data=g5
+).fit(cov_type="robust")
+
+print(iv_math.summary)
+```
+
+::: callout-note
+### Interpretation of the 2SLS result for fifth-grade math
+
+The IV estimate for math is also negative and statistically significant. The coefficient on `classize` is **-0.1667**, implying that an increase of one student in class size lowers average math scores by about **0.17 points**.
+
+This result is somewhat smaller in magnitude than the corresponding reading estimate, but it points in the same direction. In practical terms, both outcomes suggest that smaller classes improve student performance, with the effect appearing somewhat stronger for reading than for math in this sample.
+
+This pattern also aligns well with the paper. Angrist and Lavy find especially clear evidence for fifth graders, and the math results become more negative once enrollment controls are included. My replication therefore supports the same conclusion: the institutional variation generated by the rule of 40 implies that smaller fifth-grade classes improve achievement.
+:::
+
+### Restrict to the discontinuity sample
+
+To move closer to a local regression discontinuity interpretation, I restrict the sample to schools with enrollment close to the key cutoffs. Following the paper, this discontinuity sample includes observations with cohort enrollment in the intervals $[36,45]$, $[76,85]$, and $[116,125]$.
+
+The logic is that observations near the thresholds are more comparable, while still preserving the discontinuous jumps in predicted class size induced by the rule. This sample restriction emphasizes the quasi-experimental variation at the cutoffs and reduces reliance on functional-form assumptions away from the discontinuities.
+
+```{python}
+# Discontinuity sample used in the paper:
+# cohsize in [36,45], [76,85], [116,125]
+
+g5_disc = g5[
+    g5["cohsize"].between(36, 45) |
+    g5["cohsize"].between(76, 85) |
+    g5["cohsize"].between(116, 125)
+].copy()
+
+print(g5_disc.shape)
+```
+
+```{python}
+# 2SLS in discontinuity sample
+iv_reading_disc = IV2SLS.from_formula(
+    "avgverb ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]",
+    data=g5_disc
+).fit(cov_type="robust")
+
+print(iv_reading_disc.summary)
+```
+
+::: callout-note
+### Interpretation of the discontinuity-sample estimate
+
+Restricting the sample to cohorts near the enrollment cutoffs produces a larger negative estimate of the class-size effect. In the discontinuity sample, the coefficient on `classize` is **-0.4749**, which is roughly twice as large as the estimate in the full sample.
+
+This is important because the discontinuity sample is closer to the spirit of a local fuzzy regression discontinuity design. By focusing on observations with cohort size in the ranges $[36,45]$, $[76,85]$, and $[116,125]$, the analysis places more weight on schools that are close to the thresholds where predicted class size jumps.
+
+The larger coefficient suggests that the causal effect may be strongest in the local neighborhood around the cutoffs, which is exactly where the identifying variation is cleanest. At the same time, this estimate is less precise than the full-sample result, which is expected given the much smaller number of observations. Still, the sign and significance remain consistent with the paper’s main conclusion: **smaller classes raise fifth-grade reading scores**.
+:::
+
+### Cluster standard errors at the school level
+
+The unit of observation in the replication is the class, but classes within the same school may share unobserved characteristics. This means that the residuals may be correlated within schools, which would make conventional heteroskedasticity-robust standard errors too small.
+
+To address this, I cluster standard errors at the school level using `schlcode`. This follows the logic of the original paper, which adjusts inference for within-school correlation between classes. In practice, this affects precision more than point estimates, but it is important for making the replication comparable to the published results.
+
+```{python}
+iv_reading_clustered = IV2SLS.from_formula(
+    "avgverb ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]",
+    data=g5
+).fit(cov_type="clustered", clusters=g5["schlcode"])
+
+print(iv_reading_clustered.summary)
+```
+
+::: callout-note
+### Interpretation of the clustered-standard-error specification
+
+When I cluster standard errors at the school level, the estimated effect of class size on reading remains negative and statistically significant. The coefficient on `classize` is still **-0.2321**, while the standard error increases from about **0.050** to about **0.061**.
+
+This is exactly what one would expect. Clustering changes the precision of the estimate, not the coefficient itself, because it adjusts for correlation in the error terms across classes within the same school. Since schools may share common resources, administrators, or student composition across classes, clustering is an appropriate correction in this setting.
+
+The key takeaway is that the substantive result survives this more conservative inference procedure. Even after allowing for within-school dependence, the estimate remains statistically significant and economically meaningful. This makes the replication more comparable to the original paper, which also adjusts standard errors for within-school correlation.
+:::
+
+## Additional Analysis: Visualizing the Identification Strategy
+
+As an additional exercise, I will supplement the regression results with a graphical representation of the paper’s identification strategy. Angrist and Lavy’s design relies on the fact that Maimonides’ rule creates discontinuous changes in predicted class size at enrollment thresholds of $40$, $80$, $120$, and so on. If this rule is genuinely generating exogenous variation in class size, then the first-stage relationship should be visible in the data: observed class size should move with the nonlinear pattern implied by the rule.
+
+I will plot cohort size against both actual class size and predicted class size from Maimonides’ rule. I will also plot average verbal scores against cohort size using binned averages. These figures make the causal logic of the paper easier to see. The first graph shows the treatment variation induced by the rule, while the second graph shows that achievement moves in a way consistent with smaller classes improving outcomes.
+
+```{python}
+#| echo: false
+#| output: true
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="talk")
+
+# Collapse to cohort-size means for plotting
+plot_df = (
+    g5.groupby("cohsize", as_index=False)
+      .agg(
+          mean_classize=("classize", "mean"),
+          mean_pred_class_size=("pred_class_size", "mean"),
+          mean_avgverb=("avgverb", "mean"),
+          n=("avgverb", "size")
+      )
+      .sort_values("cohsize")
+)
+
+# Full first-stage graph
+fig, ax = plt.subplots(figsize=(12, 7))
+
+sns.lineplot(
+    data=plot_df,
+    x="cohsize",
+    y="mean_classize",
+    ax=ax,
+    linewidth=3,
+    label="Actual average class size"
+)
+
+sns.lineplot(
+    data=plot_df,
+    x="cohsize",
+    y="mean_pred_class_size",
+    ax=ax,
+    linestyle="--",
+    linewidth=3,
+    label="Predicted by Maimonides' rule"
+)
+
+for cutoff in [40, 80, 120, 160]:
+    ax.axvline(cutoff, linestyle=":", linewidth=1.5)
+
+ax.set_title("Actual and Predicted Class Size by Cohort Size")
+ax.set_xlabel("Cohort size")
+ax.set_ylabel("Class size")
+ax.legend(loc="upper left", frameon=True)
+plt.tight_layout()
+```
+
+::: callout-note
+### Interpretation of full first-stage graph
+
+The full-sample graph shows the characteristic sawtooth pattern of the rule. More importantly, the observed average class size follows the same general shape, even though it does not match the rule perfectly. This visual evidence is consistent with the first-stage regression, where predicted class size strongly explains actual class size.
+:::
+
+```{python}
+#| echo: false
+#| output: true
+
+# Best zoomed figure: around cutoff 40
+zoom40 = plot_df[(plot_df["cohsize"] >= 36) & (plot_df["cohsize"] <= 44)].copy()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+sns.lineplot(
+    data=zoom40,
+    x="cohsize",
+    y="mean_classize",
+    marker="o",
+    linewidth=3,
+    ax=ax,
+    label="Actual average class size"
+)
+
+sns.lineplot(
+    data=zoom40,
+    x="cohsize",
+    y="mean_pred_class_size",
+    marker="o",
+    linestyle="--",
+    linewidth=3,
+    ax=ax,
+    label="Predicted by Maimonides' rule"
+)
+
+ax.axvline(40, linestyle=":", linewidth=1.5)
+
+ax.set_title("First-Stage Discontinuity at the 40-Student Cutoff")
+ax.set_xlabel("Cohort size")
+ax.set_ylabel("Class size")
+ax.legend(loc="upper right", frameon=True)
+plt.tight_layout()
+plt.show()
+```
+::: callout-note
+### Interpretation of the zoomed discontinuity graph
+
+The zoomed graph around the 40-student cutoff makes the identifying variation especially clear. As cohort size increases from 36 to 40, predicted class size rises from about 36 to 40 students. Once enrollment crosses from 40 to 41, predicted class size drops sharply to about 20.5 because the cohort is split into two classes:
+
+$$
+f_s = \frac{e_s}{\left\lfloor \frac{e_s - 1}{40} \right\rfloor + 1}.
+$$
+
+Observed class size also falls discretely at this cutoff, though not by exactly the same amount. This is why the design is best understood as a **fuzzy regression discontinuity**: the institutional rule creates a discontinuous change in expected class size, and actual class size responds strongly but not perfectly.
+:::
+
+### Why this strengthens the causal interpretation
+
+These graphs strengthen the causal interpretation of the paper’s estimates because they show that the source of variation is generated by an administrative rule rather than by ordinary differences across schools. Schools just below and just above a cutoff are likely to be similar in many ways, but they face different predicted class sizes because of the rule. The resulting discontinuity in actual class size is what allows the authors to isolate plausibly exogenous variation in treatment.
+
+In this sense, the figures complement the 2SLS estimates by showing the logic of the design directly. The rule creates sharp nonlinearities in class size, and those nonlinearities provide the basis for causal inference.
