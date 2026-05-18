@@ -291,7 +291,7 @@ Note
 <p>In the real world, we would not know the true values of <span class="math inline">\(\pi_A\)</span> and <span class="math inline">\(\pi_B\)</span> because they are population-level sign-up probabilities. We cannot observe every possible visitor who could ever see CTA A or CTA B. However, we can use a sample to estimate the underlying probabilities. We can construct these samples by simulating data so that we can check whether our estimator is working the way we expect.</p>
 <p>Suppose <span class="math inline">\(\pi_A = 0.22\)</span> and <span class="math inline">\(\pi_B = 0.18\)</span>, so the true difference is <span class="math inline">\(\theta = 0.04\)</span>.</p>
 <p>To demonstrate this, we can simulate 1,000 draws from two Bernoulli distributions with our two probabilities. By doing this, we can mimic the randomness of real experiments in a controlled environment.</p>
-<div id="4bc7183b" class="cell" data-execution_count="1">
+<div id="5262e525" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -313,14 +313,14 @@ Note
 <h2 class="anchored" data-anchor-id="the-law-of-large-numbers">The Law of Large Numbers</h2>
 <p>The <strong>Law of Large Numbers</strong> states that as the sample size increases, the sample mean converges to the true population mean. In the A/B testing setting, this means that the sample sign-up rates <span class="math inline">\(\hat{\pi}_A\)</span> and <span class="math inline">\(\hat{\pi}_B\)</span> get closer to the true sign-up probabilities <span class="math inline">\(\pi_A\)</span> and <span class="math inline">\(\pi_B\)</span> as the number of observations in each group becomes large. The LLN is what gives us confidence that <span class="math inline">\(\hat\theta = \bar{X}_A - \bar{X}_B\)</span> will be close to the true <span class="math inline">\(\theta\)</span> when our sample is large enough.</p>
 <p>Using the simulated data from the previous section, we will compute the element-wise differences between the CTA A draws and the CTA B draws to get a vector of 1,000 differences. Then we will the cumulative average of that vector (i.e., the running mean after 1 draw, after 2 draws, …, after 1,000 draws) and plot it against the number of observations.</p>
-<div id="3f6fb0b7" class="cell" data-execution_count="2">
+<div id="5b690159" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Element-wise differences</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>differences <span class="op">=</span> A_draws <span class="op">-</span> B_draws</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cumulative average (running mean)</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>cumulative_avg <span class="op">=</span> np.cumsum(differences) <span class="op">/</span> np.arange(<span class="dv">1</span>, N <span class="op">+</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="3c3cd15a" class="cell" data-execution_count="3">
+<div id="9441e6f0" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -357,7 +357,7 @@ Note
 SE(\hat\theta) = \sqrt{\frac{\hat\pi_A(1 - \hat\pi_A)}{n_A} + \frac{\hat\pi_B(1 - \hat\pi_B)}{n_B}}
 \]</span></p>
 <p>where <span class="math inline">\(\hat\pi_A\)</span> and <span class="math inline">\(\hat\pi_B\)</span> are the sample proportions and <span class="math inline">\(n_A\)</span> and <span class="math inline">\(n_B\)</span> are the sample sizes.</p>
-<div id="5d9c0a80" class="cell" data-execution_count="4">
+<div id="10bd8af4" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of simulations</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n_boot <span class="op">=</span> <span class="dv">1000</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -408,7 +408,7 @@ Analytical standard error: 0.017766823013696063</code></pre>
 <section id="confidence-intervals-with-the-bootstrap-standard-error" class="level3">
 <h3 class="anchored" data-anchor-id="confidence-intervals-with-the-bootstrap-standard-error">Confidence Intervals with the Bootstrap Standard Error</h3>
 <p>We can now construct the confidence interval using the bootstrapped standard error:</p>
-<div id="27b68430" class="cell" data-execution_count="5">
+<div id="596e1cc1" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute theta_hat</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>theta_hat <span class="op">=</span> pi_A_hat <span class="op">-</span> pi_B_hat</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -437,7 +437,7 @@ Analytical standard error: 0.017766823013696063</code></pre>
 \]</span> That means the sample proportion is approximately normally distributed around the true probability <span class="math inline">\(\pi\)</span>, with variance <span class="math inline">\(\frac{\pi(1-\pi)}{n}\)</span>.</p>
 <section id="the-clt-in-action" class="level3">
 <h3 class="anchored" data-anchor-id="the-clt-in-action">The CLT in Action</h3>
-<div id="4260525d" class="cell" data-execution_count="6">
+<div id="b181af78" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample sizes</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>sample_sizes <span class="op">=</span> [<span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">500</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -458,7 +458,7 @@ Analytical standard error: 0.017766823013696063</code></pre>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    results[n] <span class="op">=</span> theta_hat_values</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="bda682f5" class="cell" data-execution_count="7">
+<div id="8fe88aff" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -484,7 +484,7 @@ z = \frac{\hat\theta - 0}{SE(\hat\theta)}
 <h3 class="anchored" data-anchor-id="standardizing">Standardizing</h3>
 <p>The logic of this standardization is as follows. By the CLT, for large samples, <span class="math inline">\(\hat{\theta}\)</span> is approximately Normally distributed. Under the null hypothesis <span class="math inline">\(H_0: \theta = 0\)</span>, the center of that distribution is 0. Dividing by its standard error converts <span class="math inline">\(\hat{\theta}\)</span> into a standardized quantity measured in units of standard deviations. As a result, under <span class="math inline">\(H_0\)</span>, the test statistic is approximately distributed as a standard Normal random variable: <span class="math inline">\(z \approx N(0,1)\)</span>. Once we know this reference distribution, we can compute a p-value, which tells us how unusual the observed test statistic would be if the null hypothesis were true.</p>
 <p>Although this procedure is sometimes informally called a “t-test,” that terminology is not exact here. The classical t-test applies when the data are Normally distributed and the variance is estimated, leading to a statistic that follows a t-distribution. In our A/B testing setting, the data are Bernoulli rather than Normal, so there is no exact t-distribution result. Instead, the justification comes from the CLT, which gives an approximate Normal distribution for <span class="math inline">\(\hat{\theta}\)</span> in large samples. For that reason, this procedure is more accurately described as a large-sample z-test, even though in practice the distinction between the t-distribution and the standard Normal is often negligible for large samples.</p>
-<div id="a1028dca" class="cell" data-execution_count="8">
+<div id="2739a621" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># example simulated data</span></span>
@@ -539,7 +539,7 @@ Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i.
 <section id="why-this-equivalence-matters" class="level3">
 <h3 class="anchored" data-anchor-id="why-this-equivalence-matters">Why This Equivalence Matters</h3>
 <p>This equivalence matters because it shows that the hypothesis test for comparing two means can be viewed as a regression coefficient test. In the simple two-group case, the regression and two-sample approach give the same estimated treatment effect. More importantly, the regression framework makes it easy to extend the analysis by adding controls, interactions, or additional treatment arms while preserving the same basic interpretation of the treatment coefficient.</p>
-<div id="0be58e91" class="cell" data-execution_count="9">
+<div id="09bf098d" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -571,8 +571,8 @@ Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i.
 Dep. Variable:                      Y   R-squared:                       0.001
 Model:                            OLS   Adj. R-squared:                 -0.004
 Method:                 Least Squares   F-statistic:                    0.1646
-Date:                Sun, 17 May 2026   Prob (F-statistic):              0.685
-Time:                        19:32:12   Log-Likelihood:                -72.011
+Date:                Mon, 18 May 2026   Prob (F-statistic):              0.685
+Time:                        09:54:34   Log-Likelihood:                -72.011
 No. Observations:                 200   AIC:                             148.0
 Df Residuals:                     198   BIC:                             154.6
 Df Model:                           1                                         
@@ -616,7 +616,7 @@ Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i
 <section id="demonstrating-peeking" class="level3">
 <h3 class="anchored" data-anchor-id="demonstrating-peeking">Demonstrating Peeking</h3>
 <p>Because each interim look creates another chance to reject the null hypothesis by random fluctuation alone, this false positive rate is much larger than the nominal 5% level of a single test. Thus, repeatedly checking the data and stopping early when significance appears invalidates the usual interpretation of the p-value unless a sequential testing correction is used.</p>
-<div id="927f86bf" class="cell" data-execution_count="10">
+<div id="8f3f6210" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># settings</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>pi_A <span class="op">=</span> <span class="fl">0.20</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>pi_B <span class="op">=</span> <span class="fl">0.20</span></span>

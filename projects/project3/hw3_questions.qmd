@@ -99,12 +99,12 @@ for ax, grp, color, label in [
     ax.set_xlim(-0.5, max_val + 1)
     ax.set_xlabel("Patents awarded (5-year total)")
     ax.set_ylabel("Number of firms")
-    ax.set_title(label, fontsize=12, fontweight="bold")
+    ax.set_title(label, fontsize=12, fontweight="light")
     ax.legend(frameon=False, fontsize=9)
     sns.despine(ax=ax)
 
 plt.suptitle("Distribution of Patent Counts by Customer Status",
-             fontsize=13, fontweight="bold", y=1.02)
+             fontsize=13, fontweight="light", y=1.02)
 plt.tight_layout()
 plt.show()
 ```
@@ -154,7 +154,7 @@ sns.barplot(
 ax.set_xlabel("Region")
 ax.set_ylabel("Share of group (%)")
 ax.set_title("Regional Composition by Customer Status",
-             fontsize=12, fontweight="bold")
+             fontsize=12, fontweight="light")
 ax.tick_params(axis="x", rotation=20)
 ax.legend(frameon=False)
 sns.despine(ax=ax)
@@ -200,12 +200,12 @@ for ax, grp, color, label in [
     ax.set_xlim(age_min, age_max)
     ax.set_xlabel("Firm age (years since incorporation)")
     ax.set_ylabel("Number of firms")
-    ax.set_title(label, fontsize=12, fontweight="bold")
+    ax.set_title(label, fontsize=12, fontweight="light")
     ax.legend(frameon=False, fontsize=9)
     sns.despine(ax=ax)
 
 plt.suptitle("Firm Age Distribution by Customer Status",
-             fontsize=13, fontweight="bold", y=1.02)
+             fontsize=13, fontweight="light", y=1.02)
 plt.tight_layout()
 plt.show()
 ```
@@ -297,7 +297,7 @@ ax.axvline(y_bar, color=GREEN, linestyle="--", linewidth=1.7,
 ax.set_xlabel(r"Rate parameter $\lambda$")
 ax.set_ylabel(r"Log-likelihood $\;\ell(\lambda)$")
 ax.set_title("Poisson Log-Likelihood over Observed Patent Counts",
-             fontsize=12, fontweight="bold")
+             fontsize=12, fontweight="light")
 ax.legend(frameon=False, fontsize=10)
 sns.despine(ax=ax)
 plt.tight_layout()
@@ -607,7 +607,7 @@ print(f"Relative uplift                           : {ate / yhat0.mean() * 100:.1
 ```{python}
 #| echo: false
 #| label: fig-ate
-#| fig-cap: "Distribution of firm-level treatment effects — the difference in predicted patent count between the Blueprinty-customer and non-customer scenarios for each firm, holding age and region fixed. The red dashed line marks the Average Treatment Effect (ATE)."
+#| fig-cap: "Distribution of firm-level treatment effects — the difference in predicted patent count between the Blueprinty-customer and non-customer scenarios for each firm, holding age and region fixed. The green dashed line marks the Average Treatment Effect (ATE)."
 #| fig-width: 8
 #| fig-height: 4
 
@@ -620,7 +620,7 @@ ax.axvline(ate, color=GREEN, linestyle="--", linewidth=1.8,
 ax.set_xlabel("Predicted additional patents  ($\\hat{y}_1 - \\hat{y}_0$)")
 ax.set_ylabel("Number of firms")
 ax.set_title("Distribution of Firm-Level Treatment Effects",
-             fontsize=12, fontweight="bold")
+             fontsize=12, fontweight="light")
 ax.legend(frameon=False)
 plt.tight_layout()
 plt.show()
@@ -790,7 +790,7 @@ ax.scatter(
 ax.set_xlabel(r"$\beta_{\mathrm{customer}}$", fontsize=11)
 ax.set_ylabel(r"$\beta_0$  (intercept)", fontsize=11)
 ax.set_title("Log-Likelihood Surface: Intercept vs. Customer Coefficient",
-             fontsize=12, fontweight="bold")
+             fontsize=12, fontweight="light")
 ax.legend(frameon=False, fontsize=9)
 sns.despine(ax=ax)
 plt.tight_layout()

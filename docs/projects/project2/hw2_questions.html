@@ -252,7 +252,7 @@ window.Quarto = {
 </section>
 <section id="main-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="main-analysis">Main Analysis</h2>
-<div id="a4466091" class="cell" data-execution_count="1">
+<div id="07ab6480" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -261,7 +261,7 @@ window.Quarto = {
 </div>
 <section id="load-the-fifth-grade-sample" class="level3">
 <h3 class="anchored" data-anchor-id="load-the-fifth-grade-sample">Load the fifth-grade sample</h3>
-<div id="ce9e3f11" class="cell" data-execution_count="3">
+<div id="bb2cea3c" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load in dataset</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df5 <span class="op">=</span> pd.read_stata(data_dir <span class="op">/</span> <span class="st">"final5.dta"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -437,7 +437,7 @@ Column names: ['schlcode', 'c_size', 'c_boys', 'c_girls', 'c_numcl', 'c_pik', 'c
 </section>
 <section id="identify-the-core-variables" class="level3">
 <h3 class="anchored" data-anchor-id="identify-the-core-variables">Identify the core variables</h3>
-<div id="ab5e6356" class="cell" data-execution_count="4">
+<div id="378fa7c6" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep the core variables for replication</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>g5 <span class="op">=</span> df5[[<span class="st">"classize"</span>, <span class="st">"cohsize"</span>, <span class="st">"avgverb"</span>, <span class="st">"avgmath"</span>, <span class="st">"tipuach"</span>, <span class="st">"schlcode"</span>]].copy()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -548,7 +548,7 @@ Column names: ['schlcode', 'c_size', 'c_boys', 'c_girls', 'c_numcl', 'c_pik', 'c
 f_s = \frac{e_s}{\left\lfloor \frac{e_s - 1}{40} \right\rfloor + 1}.
 \]</span></p>
 <p>This formula captures the fact that a cohort of up to 40 students can remain in one class, while a cohort of 41 students must be split into two classes. More generally, the denominator gives the number of classes implied by the 40-student cap. Following the paper, I use this rule-based predicted class size as an instrument for actual class size.</p>
-<div id="72867396" class="cell" data-execution_count="5">
+<div id="6e0ed38b" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct Maimonides' rule predicted class size</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># f_sc = enrollment / ( floor((enrollment - 1)/40) + 1 )</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -644,7 +644,7 @@ f_s = \frac{e_s}{\left\lfloor \frac{e_s - 1}{40} \right\rfloor + 1}.
 \text{classize}_{sc} = \pi_0 + \pi_1 f_s + \pi_2 \text{tipuach}_s + \pi_3 \text{cohsize}_s + u_{sc},
 \]</span></p>
 <p>where <span class="math inline">\(f_s\)</span> is predicted class size from Maimonides’ rule. A strong negative or positive association between the instrument and observed class size is essential, because the IV estimates rely on this rule-based variation to identify the causal effect of class size.</p>
-<div id="d5e42418" class="cell" data-execution_count="6">
+<div id="1ac1e336" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick first-stage check with OLS</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>X_fs <span class="op">=</span> g5[[<span class="st">"pred_class_size"</span>, <span class="st">"tipuach"</span>, <span class="st">"cohsize"</span>]].copy()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>X_fs <span class="op">=</span> sm.add_constant(X_fs)</span>
@@ -657,8 +657,8 @@ f_s = \frac{e_s}{\left\lfloor \frac{e_s - 1}{40} \right\rfloor + 1}.
 Dep. Variable:               classize   R-squared:                       0.644
 Model:                            OLS   Adj. R-squared:                  0.643
 Method:                 Least Squares   F-statistic:                     1991.
-Date:                Sun, 17 May 2026   Prob (F-statistic):               0.00
-Time:                        19:32:22   Log-Likelihood:                -5646.3
+Date:                Mon, 18 May 2026   Prob (F-statistic):               0.00
+Time:                        09:54:43   Log-Likelihood:                -5646.3
 No. Observations:                2024   AIC:                         1.130e+04
 Df Residuals:                    2020   BIC:                         1.132e+04
 Df Model:                           3                                         
@@ -709,7 +709,7 @@ Notes:
 \text{avgverb}_{sc} = \rho_0 + \rho_1 f_s + \rho_2 \text{tipuach}_s + \rho_3 \text{cohsize}_s + \varepsilon_{sc}.
 \]</span></p>
 <p>If smaller classes improve achievement, then the discontinuities induced by the rule should generate corresponding shifts in test performance.</p>
-<div id="0f9d553e" class="cell" data-execution_count="7">
+<div id="304a48db" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduced form: reading score on predicted class size + controls</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>X_rf <span class="op">=</span> g5[[<span class="st">"pred_class_size"</span>, <span class="st">"tipuach"</span>, <span class="st">"cohsize"</span>]].copy()</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>X_rf <span class="op">=</span> sm.add_constant(X_rf)</span>
@@ -722,8 +722,8 @@ Notes:
 Dep. Variable:                avgverb   R-squared:                       0.333
 Model:                            OLS   Adj. R-squared:                  0.332
 Method:                 Least Squares   F-statistic:                     249.2
-Date:                Sun, 17 May 2026   Prob (F-statistic):          1.34e-137
-Time:                        19:32:22   Log-Likelihood:                -6690.2
+Date:                Mon, 18 May 2026   Prob (F-statistic):          1.34e-137
+Time:                        09:54:43   Log-Likelihood:                -6690.2
 No. Observations:                2024   AIC:                         1.339e+04
 Df Residuals:                    2020   BIC:                         1.341e+04
 Df Model:                           3                                         
@@ -774,7 +774,7 @@ Notes:
 \text{avgverb}_{sc} = \beta_0 + \beta_1 \text{classize}_{sc} + \beta_2 \text{tipuach}_s + \beta_3 \text{cohsize}_s + \eta_{sc},
 \]</span></p>
 <p>where <code>classize</code> is treated as endogenous and instrumented with <span class="math inline">\(f_s\)</span>. The coefficient of interest is <span class="math inline">\(\beta_1\)</span>. A negative estimate implies that reducing class size increases average verbal achievement, which is the core finding reported in the paper for fifth graders.</p>
-<div id="33887666" class="cell" data-execution_count="8">
+<div id="8aee87de" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Main 2SLS specification: fifth-grade reading</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>iv_reading <span class="op">=</span> IV2SLS.from_formula(</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avgverb ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]"</span>,</span>
@@ -788,8 +788,8 @@ Notes:
 Dep. Variable:                avgverb   R-squared:                      0.3084
 Estimator:                    IV-2SLS   Adj. R-squared:                 0.3074
 No. Observations:                2024   F-statistic:                    699.67
-Date:                Sun, May 17 2026   P-value (F-stat)                0.0000
-Time:                        19:32:22   Distribution:                  chi2(3)
+Date:                Mon, May 18 2026   P-value (F-stat)                0.0000
+Time:                        09:54:43   Distribution:                  chi2(3)
 Cov. Estimator:                robust                                         
                                                                               
                              Parameter Estimates                              
@@ -841,7 +841,7 @@ Debiased: False</code></pre>
 + \eta_{sc}.
 \]</span></p>
 <p>This helps check whether the estimated class-size effect is robust to a more flexible control for enrollment.</p>
-<div id="b840e777" class="cell" data-execution_count="9">
+<div id="637c1784" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2SLS with quadratic enrollment control</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>g5[<span class="st">"cohsize_sq_100"</span>] <span class="op">=</span> (g5[<span class="st">"cohsize"</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> <span class="dv">100</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -857,8 +857,8 @@ Debiased: False</code></pre>
 Dep. Variable:                avgverb   R-squared:                      0.3084
 Estimator:                    IV-2SLS   Adj. R-squared:                 0.3070
 No. Observations:                2024   F-statistic:                    699.71
-Date:                Sun, May 17 2026   P-value (F-stat)                0.0000
-Time:                        19:32:22   Distribution:                  chi2(4)
+Date:                Mon, May 18 2026   P-value (F-stat)                0.0000
+Time:                        09:54:43   Distribution:                  chi2(4)
 Cov. Estimator:                robust                                         
                                                                               
                                Parameter Estimates                                
@@ -907,7 +907,7 @@ Debiased: False</code></pre>
 <h3 class="anchored" data-anchor-id="compare-reading-and-math-outcomes">Compare reading and math outcomes</h3>
 <p>After estimating the model for verbal achievement, I repeat the same 2SLS procedure using average math scores as the dependent variable. This comparison is useful because the paper reports stronger and more consistent evidence for some outcomes than for others. Replicating both outcomes helps determine whether the data reproduce the same qualitative pattern.</p>
 <p>Using the same instrument and control set also makes the comparison clean: any difference in results between reading and math reflects differences in how class size affects those outcomes, rather than differences in specification.</p>
-<div id="98ec20cc" class="cell" data-execution_count="10">
+<div id="742a356d" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2SLS for math, if you want to compare to the paper</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>iv_math <span class="op">=</span> IV2SLS.from_formula(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avgmath ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]"</span>,</span>
@@ -921,8 +921,8 @@ Debiased: False</code></pre>
 Dep. Variable:                avgmath   R-squared:                      0.2130
 Estimator:                    IV-2SLS   Adj. R-squared:                 0.2118
 No. Observations:                2024   F-statistic:                    538.28
-Date:                Sun, May 17 2026   P-value (F-stat)                0.0000
-Time:                        19:32:22   Distribution:                  chi2(3)
+Date:                Mon, May 18 2026   P-value (F-stat)                0.0000
+Time:                        09:54:43   Distribution:                  chi2(3)
 Cov. Estimator:                robust                                         
                                                                               
                              Parameter Estimates                              
@@ -961,7 +961,7 @@ Debiased: False</code></pre>
 <h3 class="anchored" data-anchor-id="restrict-to-the-discontinuity-sample">Restrict to the discontinuity sample</h3>
 <p>To move closer to a local regression discontinuity interpretation, I restrict the sample to schools with enrollment close to the key cutoffs. Following the paper, this discontinuity sample includes observations with cohort enrollment in the intervals <span class="math inline">\([36,45]\)</span>, <span class="math inline">\([76,85]\)</span>, and <span class="math inline">\([116,125]\)</span>.</p>
 <p>The logic is that observations near the thresholds are more comparable, while still preserving the discontinuous jumps in predicted class size induced by the rule. This sample restriction emphasizes the quasi-experimental variation at the cutoffs and reduces reliance on functional-form assumptions away from the discontinuities.</p>
-<div id="c90ebae3" class="cell" data-execution_count="11">
+<div id="e6374927" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Discontinuity sample used in the paper:</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># cohsize in [36,45], [76,85], [116,125]</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -976,7 +976,7 @@ Debiased: False</code></pre>
 <pre><code>(431, 8)</code></pre>
 </div>
 </div>
-<div id="ae1e37f5" class="cell" data-execution_count="12">
+<div id="00dff3bc" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2SLS in discontinuity sample</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>iv_reading_disc <span class="op">=</span> IV2SLS.from_formula(</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avgverb ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]"</span>,</span>
@@ -990,8 +990,8 @@ Debiased: False</code></pre>
 Dep. Variable:                avgverb   R-squared:                      0.3013
 Estimator:                    IV-2SLS   Adj. R-squared:                 0.2964
 No. Observations:                 431   F-statistic:                    182.55
-Date:                Sun, May 17 2026   P-value (F-stat)                0.0000
-Time:                        19:32:22   Distribution:                  chi2(3)
+Date:                Mon, May 18 2026   P-value (F-stat)                0.0000
+Time:                        09:54:43   Distribution:                  chi2(3)
 Cov. Estimator:                robust                                         
                                                                               
                              Parameter Estimates                              
@@ -1030,7 +1030,7 @@ Debiased: False</code></pre>
 <h3 class="anchored" data-anchor-id="cluster-standard-errors-at-the-school-level">Cluster standard errors at the school level</h3>
 <p>The unit of observation in the replication is the class, but classes within the same school may share unobserved characteristics. This means that the residuals may be correlated within schools, which would make conventional heteroskedasticity-robust standard errors too small.</p>
 <p>To address this, I cluster standard errors at the school level using <code>schlcode</code>. This follows the logic of the original paper, which adjusts inference for within-school correlation between classes. In practice, this affects precision more than point estimates, but it is important for making the replication comparable to the published results.</p>
-<div id="2bc4a5a5" class="cell" data-execution_count="13">
+<div id="972f9b5d" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>iv_reading_clustered <span class="op">=</span> IV2SLS.from_formula(</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avgverb ~ 1 + tipuach + cohsize + [classize ~ pred_class_size]"</span>,</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>g5</span>
@@ -1043,8 +1043,8 @@ Debiased: False</code></pre>
 Dep. Variable:                avgverb   R-squared:                      0.3084
 Estimator:                    IV-2SLS   Adj. R-squared:                 0.3074
 No. Observations:                2024   F-statistic:                    550.45
-Date:                Sun, May 17 2026   P-value (F-stat)                0.0000
-Time:                        19:32:22   Distribution:                  chi2(3)
+Date:                Mon, May 18 2026   P-value (F-stat)                0.0000
+Time:                        09:54:43   Distribution:                  chi2(3)
 Cov. Estimator:             clustered                                         
                                                                               
                              Parameter Estimates                              
@@ -1085,7 +1085,7 @@ Num Clusters: 1003</code></pre>
 <h2 class="anchored" data-anchor-id="additional-analysis-visualizing-the-identification-strategy">Additional Analysis: Visualizing the Identification Strategy</h2>
 <p>As an additional exercise, I will supplement the regression results with a graphical representation of the paper’s identification strategy. Angrist and Lavy’s design relies on the fact that Maimonides’ rule creates discontinuous changes in predicted class size at enrollment thresholds of <span class="math inline">\(40\)</span>, <span class="math inline">\(80\)</span>, <span class="math inline">\(120\)</span>, and so on. If this rule is genuinely generating exogenous variation in class size, then the first-stage relationship should be visible in the data: observed class size should move with the nonlinear pattern implied by the rule.</p>
 <p>I will plot cohort size against both actual class size and predicted class size from Maimonides’ rule. I will also plot average verbal scores against cohort size using binned averages. These figures make the causal logic of the paper easier to see. The first graph shows the treatment variation induced by the rule, while the second graph shows that achievement moves in a way consistent with smaller classes improving outcomes.</p>
-<div id="8434a9c7" class="cell" data-execution_count="14">
+<div id="eacf8d95" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1107,7 +1107,7 @@ Num Clusters: 1003</code></pre>
 <p>The full-sample graph shows the characteristic sawtooth pattern of the rule. More importantly, the observed average class size follows the same general shape, even though it does not match the rule perfectly. This visual evidence is consistent with the first-stage regression, where predicted class size strongly explains actual class size.</p>
 </div>
 </div>
-<div id="e07fe1bf" class="cell" data-execution_count="15">
+<div id="929b915f" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
