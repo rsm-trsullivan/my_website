@@ -275,14 +275,11 @@ y_bar    = y.mean()
 ```
 
 ```{python}
+#| echo: false
 #| label: fig-loglik
 #| fig-cap: "The Poisson log-likelihood evaluated at the observed patent counts, peaking at the sample mean."
 #| fig-width: 7
 #| fig-height: 3.5
-
-lam_grid = np.linspace(1.0, 8.5, 600)
-ll_vals  = [poisson_loglikelihood(lam, y) for lam in lam_grid]
-y_bar    = y.mean()
 
 ll_df = pd.DataFrame({"λ": lam_grid, "Log-likelihood ℓ(λ)": ll_vals})
 
@@ -835,6 +832,7 @@ grad_ate = (1 / len(df)) * (
     (X0.values * lam_0[:, np.newaxis])
 ).sum(axis=0)
 
+# Construct 95% confidence interval
 se_ate  = float(np.sqrt(grad_ate @ cov_mle @ grad_ate))
 ci_low  = ate - 1.96 * se_ate
 ci_high = ate + 1.96 * se_ate
