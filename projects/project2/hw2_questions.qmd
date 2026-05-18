@@ -1,8 +1,8 @@
 ---
 title: "Replication of Angrist and Lavy (1999)"
-subtitle: "USING MAIMONIDES’ RULE TO ESTIMATE THE EFFECT OF CLASS SIZE ON SCHOLASTIC ACHIEVEMENT*"
+subtitle: "USING MAIMONIDES’ RULE TO ESTIMATE THE EFFECT OF CLASS SIZE ON SCHOLASTIC ACHIEVEMENT"
 author: "Trevor Sullivan"
-date: today
+date: April 22, 2026
 ---
 
 
